@@ -1,0 +1,141 @@
+---
+title: "Deaths by Classification of Statistical Regional Units and Selected Causes of Death"
+author: 
+  - Mermer, Kadirhan[^1]
+bibliography: ../bibliography/biblio.bib
+csl: ../csl/apa.csl
+header-includes:
+  - \usepackage{polyglossia}
+  - \setmainlanguage{english}
+  - \usepackage{booktabs}
+  - \usepackage{caption} 
+  - \captionsetup[table]{skip=10pt}
+output:
+  bookdown::pdf_document2:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 4
+    keep_tex: no
+    latex_engine: xelatex
+    number_sections: yes
+    toc: no
+geometry: margin=1in
+link-citations: yes
+urlcolor: blue
+fontsize: 12pt
+biblio-style: apalike
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+<!-- ======================================================================= -->
+<!-- ============================== FOOTNOTES ============================== -->
+<!-- ======================================================================= -->
+[^1]: 19080775, [Github Repo](https://github.com/kadirs38/19080775)
+
+
+# Introduction
+Statistical data obtained in health-related fields and objective indicators obtained as a result of these data are important for determining the health levels of societies, determining health-related priorities, planning health services, evaluating the success of service provision and making comparisons. For these purposes, fertility, mortality and disease indicators are generally used. Mortality shows the degree of effectiveness of health care services and the level of need for health care services. Mortality studies cover the who, how, why and when of mortality and population size, composition and distribution and their interrelationships. In order to have well-functioning health systems, countries need to know accurately how many people are born and how many people die each year and the main causes of their deaths. When deaths are not counted and causes of death are not documented, governments cannot plan effective public health policies, make the right interventions or measure their impact. Information on deaths by age, sex and cause is the cornerstone of planning for all public health issues.
+When setting priorities in public health, it is important to be aware not only of the current extent of health problems but also of trends in them. These trends provide important information on whether a cause of death is increasing or decreasing, whether current disease control efforts are working or are inadequate. Cause-of-death statistics are an important source of data for explaining mortality patterns across space and time, for making population projections, for supporting public health programmes and for hypothesising for research. In addition, it is a necessary data for the determination of public health policies and constitutes the basis of the public health statistics system.
+
+## Literature Review
+
+The most common cause of death was determined as circulatory system diseases. Most of the deaths occurred in winter months. When the regional distribution of diseases was analysed, it was found that deaths due to circulatory and respiratory systems were higher in the western and eastern regions of the Black Sea region. When both sexes were considered, circulatory system disorders, malignancies and respiratory system disorders were the most common causes of death. Conclusion: Determination of mortality rates and causes of death helps to rationalise the policies developed in the field of health and the budget allocated to health by reducing health expenditures.[@akturan:2018]
+
+The causes leading to the deaths of so many children in both developed and developing countries have been investigated and diarrhoea, pneumonia, measles, tetanus and whooping cough have been listed as the leading causes. Among the factors that indirectly cause deaths, malnutrition and lack of education were emphasised, particularly in developing countries, and AIDS, the scourge of our age, was reported.[@altınkaynak:1991]
+
+As one of the most important health outcomes, mortality and its causes are affected by socioeconomic variables as well as health services and the number and quality of health manpower providing these services. Determining the correlations between human resources in health services and mortality is also important in terms of determining the need for health manpower, providing the appropriate qualitative distribution and determining the related policies. In this study, the relationships between mortality rates and causes of mortality and related physician branches were investigated. In addition, the correlations with social and economic capacities such as number of hospital beds, education, average daily earnings per capita were also analysed.[@dayan:2019]
+
+This narrow, retrospective study gives an idea about the causes of death of the patients who died in our hospital in 1985. Infectious diseases were the leading causes of death in childhood, while cardiac and cerebrovascular diseases were the leading causes after the age of 50. Medical equipment in these departments more care should be taken in terms of personnel.  Causes of death should be written properly and in unity of expression. On the other hand, people in this age group may be advised to use their heart and brain with care.[@özeke:1987]
+
+
+
+# Data
+In this section, discuss the source of the data set you use in your study, if you have done any operation on the raw data, these operations and the summary statistics about the data set. In this section, it is mandatory to have a table (Table \ref{tab:summary}) containing summary statistics (mean, standard deviation, minimum, maximum, etc. values) of all variables. Make the necessary references to your tables as shown in the previous sentence [@perkins:1991].
+
+R codes for the analysis should start in this section. In this section, you should include the codes that imports the data set into R and the codes that generate summary statistics.
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(here)
+library(readxl)
+survey <- read_excel(here("data/survey.xlsx"))
+```
+
+```{r, echo=FALSE}
+library(xtable) 
+library(summarytools)
+st_options(lang = "en")
+```
+
+
+
+
+With the `echo=FALSE` option, prevent the codes from appearing in the derived pdf file and report your results in tables.
+
+```{r results='asis', echo=FALSE}
+survey %>%
+  select("0-14", "15-24", "25-34", "35-44", "45-54", "55-64", "65-74") %>%
+  mutate(across(everything(), as.numeric)) %>%
+  descr(stats = c("mean", "sd", "min", "max"), transpose = TRUE) %>%
+  data.frame() %>%
+  xtable(
+    caption = "Summary Statistics",
+    label = "tab:summary",
+    align = c("l", rep("c", 4))
+  ) %>%
+  print(booktabs = TRUE, comment = FALSE, caption.placement = "top")
+```
+
+
+# Methods and Data Analysis
+In this section describe the methods that you use to achieve the purpose of the study. You should use the appropriate analysis methods (such as hypothesis tests and correlation analysis) that we covered in the class. If you want, you can also use other methods that we haven't covered. If you think some method is more suitable for the purpose of the analysis and the data set, you can use that method [@newbold:2003; @verzani:2014; @wickham:2014; @wooldridge:2015a].
+
+For example, if you are performing regression analysis, discuss your predicted equation in this section. Write your equations and mathematical expressions using $LaTeX$.
+
+$$
+Y_t = \beta_0 + \beta_N N_t + \beta_P P_t + \beta_I I_t + \varepsilon_t
+$$
+
+This section should also include different tables and plots. You can add histograms, scatter plots (such as Figure \@ref(fig:plot)), box plots, etc. Make the necessary references to your figures as shown in the previous sentence.
+
+
+
+```{r results='asis', echo=FALSE, fig.width=14, fig.height=10}
+library(GGally)
+library(ggplot2)
+ggpairs(data = survey, columns = 4:9, cardinality_threshold = 35)
+```
+```{r, echo=FALSE, fig.width=3, fig.height=2}
+library(ggplot2)
+library(tidyr)
+
+reasons <- c("Diseases of the circulatory system", "Neoplasms", "Diseases of the respiratory system", "Covid-19", "Endocrine", "Other", "Unknown")
+
+data <- data.frame(
+  Reason = rep(reasons, each = 4),
+  Year = rep(c(2018, 2019, 2020, 2021), length(reasons)),
+  Value = c(73657, 54814, 31769, 36763, 10289, 35627, 19753, 71538, 55298, 4130, 13837, 10672, 34019, 12348, 61767, 55414, 19953, 0, 8637, 31495, 16419, 62910, 56819, 18798, 0, 8971, 34639, 6633)
+)
+
+df_long <- gather(data, key = "Year", value = "Value", -Reason)
+
+ggplot(df_long, aes(x = Year, y = Value, fill = Reason)) +
+  geom_area() +
+  labs(x = "Year", y = "Value", title = "Reasons for Migration") +
+  scale_fill_brewer(palette = "Set3") +
+  theme_minimal()
+```
+
+# Conclusion
+Summarize the results of your analysis in this section. Discuss to what extent your results responded to the research question you identified at the beginning and how this work could be improved in the future.
+
+**References section is created automatically by Rmarkdown. There is no need to change the references section in the draft file.**
+
+**_You shouldn't delete the last 3 lines. Those lines are required for References section._**
+
+\newpage
+# References {#references}
+<div id="refs"></div>
+
